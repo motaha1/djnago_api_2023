@@ -10,11 +10,18 @@ from rest_framework.authtoken.views import obtain_auth_token
 
 
 urlpatterns = [
-    path('nurse/',views.FBV_List ),
+    path('nurse/',views.FBV_nurse ),
     path('patient/',views.FBV_patiant ),
     path('users/',views.FBV_user_get ),
-    path('nurse/<pk>/',views.FBV_pk ),
+    path('nurse/<pk>/',views.FBV_nurse_pk),
     path('tokenrequest/' , obtain_auth_token),
+    path('patient/<pk>/',views.FBV_patiant_pk),
+    path('login/',views.FBV_login),
+    path('otp/',views.otp_verify),
+
+    
+    
+    
 
 
 

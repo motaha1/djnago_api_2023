@@ -57,6 +57,8 @@ class User(AbstractUser) :
     email = models.EmailField(_("email address"), unique=True)
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = []
+    otp = models.CharField(max_length=200 , null=True , blank=True)
+    is_verified = models.BooleanField(default=False)
 
     objects = CustomUserManager() 
 
@@ -73,7 +75,11 @@ class Patient(models.Model):
     mobile = models.IntegerField (default = 0)
     city = models.CharField(max_length =100)
     birthdate = models.DateField(null = True)
-
+    GENDER_CHOICES = (
+        ('Male', 'Male'),
+        ('Female', 'Female'),
+    )
+    gender = models.CharField(max_length=100, choices=GENDER_CHOICES  ,null= True)
     def __str__(self):
         return self.user.email
 
