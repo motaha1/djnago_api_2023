@@ -1,6 +1,6 @@
 #from asyncio.windows_events import NULL
 from email.policy import default
-from tkinter import CASCADE
+from django.db.models.deletion import CASCADE
 from django.db import models
 from django.db.models.signals import post_save
 from django.db.models.signals import post_save
