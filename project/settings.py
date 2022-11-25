@@ -60,6 +60,10 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
+CSRF_TRUSTED_ORIGINS = [
+    'https://api2023.herokuapp.com'
+]
+
 CORS_ALLOWED_ORIGINS = [
         "https://example.com",
         "https://sub.example.com",
