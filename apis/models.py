@@ -50,6 +50,7 @@ class CustomUserManager(BaseUserManager):
 
 
 
+
 class User(AbstractUser) :
     username = None
     is_Patient = models.BooleanField(default = False)
@@ -59,6 +60,7 @@ class User(AbstractUser) :
     REQUIRED_FIELDS = []
     otp = models.CharField(max_length=200 , null=True , blank=True)
     is_verified = models.BooleanField(default=False)
+   # iiiii = models.CharField(max_length= 555)
 
     objects = CustomUserManager() 
 
