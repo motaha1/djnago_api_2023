@@ -64,7 +64,7 @@ class User(AbstractUser) :
     REQUIRED_FIELDS = []
     otp = models.CharField(max_length=200 , null=True , blank=True)
     is_verified = models.BooleanField(default=False)
-   # iiiii = models.CharField(max_length= 555 , null=True , blank=True)
+    iiiii = models.CharField(max_length= 555 , null=True , blank=True)
 
     objects = CustomUserManager() 
 
