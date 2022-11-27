@@ -18,6 +18,10 @@ from django.db import models
 from django.utils.translation import gettext_lazy as _
 
 
+
+
+
+
 class CustomUserManager(BaseUserManager):
     """Define a model manager for User model with no username field."""
 
@@ -60,7 +64,7 @@ class User(AbstractUser) :
     REQUIRED_FIELDS = []
     otp = models.CharField(max_length=200 , null=True , blank=True)
     is_verified = models.BooleanField(default=False)
-   # iiiii = models.CharField(max_length= 555)
+   # iiiii = models.CharField(max_length= 555 , null=True , blank=True)
 
     objects = CustomUserManager() 
 
@@ -84,6 +88,8 @@ class Patient(models.Model):
     gender = models.CharField(max_length=100, choices=GENDER_CHOICES  ,null= True)
     def __str__(self):
         return self.user.email
+
+
 
 
 
@@ -122,6 +128,16 @@ def create_token(sender ,instance = None , created = False ,  **kwargs ):
 
 
 # post_save.connect(create_object , sender = User)
+
+#send_otp_via_email(data['email'])
+
+
+# def send_otp(sender , **kwargs ):
+#     if kwargs['created']  :
+#         send_otp_via_email(kwargs['instance'].email)
+
+
+# post_save.connect(send_otp , sender = get_user_model())
 
 
 
