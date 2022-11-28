@@ -85,9 +85,18 @@ class Patient(models.Model):
         ('Male', 'Male'),
         ('Female', 'Female'),
     )
-    gender = models.CharField(max_length=100, choices=GENDER_CHOICES  ,null= True)
+    gender = models.CharField(max_length=100, choices=GENDER_CHOICES  ,null= True) ,
+
+    upload = models.ImageField(upload_to= 'images/%y/%m/%d' , null = True)
+
     def __str__(self):
         return self.user.email
+    
+    def getemail(self) :
+        return str(self.user.email)
+     
+    
+    #upload = models.ImageField(upload_to= f'images/{str(self.user.email)}' , null = True)
 
 
 
@@ -99,9 +108,10 @@ class Nurse(models.Model):
     mobile = models.IntegerField(default = 0)
     city = models.CharField(max_length =100)
     birthdate = models.DateTimeField(null = True)
+    doc = models.ImageField(upload_to='nurse_doc/%y/%m/%d' , null=True )
 
     def __str__(self):
-        return self.user.username
+        return self.user.email
 
 
 class Reservation(models.Model):
@@ -111,6 +121,15 @@ class Reservation(models.Model):
 
     def __str__(self):
         return str(self.date)
+
+
+class testupload(models.Model):
+
+
+    upload = models.ImageField(upload_to='images/')
+
+    def __str__(self):
+        return str(self.pk)
 
 '''
 @receiver(post_save , sender = settings.AUTH_USER_MODEL)

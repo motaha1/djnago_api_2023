@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.1/ref/settings/
 """
 
+import os
 
 from pathlib import Path
 from decouple import  config
@@ -76,7 +77,7 @@ ROOT_URLCONF = 'project.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [os.path.join(BASE_DIR , 'templates') ],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -96,7 +97,7 @@ WSGI_APPLICATION = 'project.wsgi.application'
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
 
 from dj_database_url import parse as dburl
-import os
+
 default_dburl = 'sqlite:///' + os.path.join(BASE_DIR, 'db.sqlite3')
 
 DATABASES = {
@@ -153,8 +154,13 @@ STATIC_URL = '/static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-STATIC_ROOT = os.path.join(BASE_DIR, 'statics')
+#STATIC_ROOT = os.path.join(BASE_DIR, 'statics')
+STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
+#####new######
+STATICFILES_DIRS =[os.path.join(BASE_DIR , 'project/static')]
+
+#####################
 
 AUTH_USER_MODEL = 'apis.User'
 

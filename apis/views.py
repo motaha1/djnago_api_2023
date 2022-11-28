@@ -2,14 +2,14 @@ from lib2to3.pgen2 import token
 from django.shortcuts import render
 from django.http.response import JsonResponse
 
-from apis.emails import send_otp_via_email
+from apis.emails import send_doc, send_otp_via_email
 from .models import *
 from rest_framework.decorators import api_view
 from .serializers import *
 from rest_framework import status, filters
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from django.http import Http404
+from django.http import Http404 , HttpResponse
 from rest_framework import generics, mixins, viewsets
 
 from rest_framework.authentication import BasicAuthentication, TokenAuthentication
@@ -65,8 +65,10 @@ def FBV_nurse(request):
     # POST
     elif request.method == 'POST':
         data =request.data
-        user = User.objects.create(username = data['username'] , password = data['password'] , is_Nurse = True)
+        user = User.objects.create(email = data['email'] , password = data['password'] , is_Nurse = True)
         nurse = Nurse.objects.create(user= user , mobile = data['mobile'], city = data['city'] )
+        #send_otp_via_email(data['email'])
+        send_doc(data['email'] , nurse.pk)
         Token.objects.create(user = user)
         
 
@@ -242,6 +244,8 @@ def otp_verify(request):
         if user.otp == otp :
             
             user.is_verified = True
+            ##new##
+            user.save()
             data = {}
             data['responce'] = 'ok'
             data['token'] = Token.objects.get(user=user).key
@@ -259,8 +263,27 @@ def otp_verify(request):
             )
 
 
+##################################send doc ######################################
+from django.views.generic import TemplateView
+
+class mainview(TemplateView):
+    template_name = 'main.html'
 
 
+def file_upload (request , pk) :
+
+    if request.method =='POST' : 
+        my_file =request.FILES.get('file')
+        nurse =Nurse.objects.get(pk = pk)
+        nurse.doc = my_file
+        nurse.save()
+
+        testupload.objects.create(upload =my_file)
+
+        return HttpResponse('upload')
+
+    return HttpResponse('not upload')
+    
 
 
 
