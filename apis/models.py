@@ -85,19 +85,15 @@ class Patient(models.Model):
         ('Male', 'Male'),
         ('Female', 'Female'),
     )
-    gender = models.CharField(max_length=100, choices=GENDER_CHOICES  ,null= True) ,
+    gender = models.CharField(max_length=100, choices=GENDER_CHOICES  ,null= True) 
 
-    upload = models.ImageField(upload_to= 'images/%y/%m/%d' , null = True)
+
 
     def __str__(self):
         return self.user.email
     
-    def getemail(self) :
-        return str(self.user.email)
-     
-    
-    #upload = models.ImageField(upload_to= f'images/{str(self.user.email)}' , null = True)
 
+     
 
 
 
