@@ -16,6 +16,8 @@ from django.db.models.signals import post_save
 from django.contrib.auth.models import AbstractUser, BaseUserManager
 from django.db import models
 from django.utils.translation import gettext_lazy as _
+from django.core.validators import MaxValueValidator, MinValueValidator
+
 
 
 
@@ -99,12 +101,12 @@ class Patient(models.Model):
 
 
 class Nurse(models.Model):
-    #name = models.CharField(max_length=100)
+    name = models.CharField(max_length=100 , null = True)
     user = models.OneToOneField(User , related_name ="Nurse" , on_delete = models.CASCADE,default=None)
     mobile = models.IntegerField(default = 0)
     city = models.CharField(max_length =100)
     birthdate = models.DateTimeField(null = True)
-    doc = models.ImageField(upload_to='nurse_doc/%y/%m/%d' , null=True )
+    doc = models.ImageField(upload_to='nurse_doc/%y/%m/%d' , null=True , blank = True)
 
     def __str__(self):
         return self.user.email
@@ -118,6 +120,19 @@ class Reservation(models.Model):
     def __str__(self):
         return str(self.date)
 
+
+class Rating(models.Model):
+    patient = models.ForeignKey(Patient,  on_delete=models.CASCADE)
+    nurse =  models.ForeignKey (Nurse,  on_delete=models.CASCADE)
+    stars = models.IntegerField(default= 1 , null = True ,  validators=[MaxValueValidator(5), MinValueValidator(1)])
+
+    def __str__(self):
+        return str(self.patient.name+" "+self.nurse.name)
+
+
+    class Meta :
+        unique_together =(('patient' , 'nurse'))
+        index_together = (('patient' , 'nurse'))
 
 class testupload(models.Model):
 

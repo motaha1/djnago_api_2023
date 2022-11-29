@@ -20,7 +20,9 @@ urlpatterns = [
     path('login/',views.FBV_login),
     path('otp/',views.otp_verify),
     path('Nursedocumint/<pk>/' ,views.mainview.as_view() , name='main-view') , 
-    path('Nursedocumint/<pk>/upload' ,views.file_upload , name='upload')
+    path('Nursedocumint/<pk>/upload' ,views.file_upload , name='upload'),
+    path ('rate/<pk>/' , views.rating_pk),
+    path ('rate/' , views.rating),
 
     
     

@@ -100,6 +100,8 @@ from dj_database_url import parse as dburl
 
 default_dburl = 'sqlite:///' + os.path.join(BASE_DIR, 'db.sqlite3')
 
+#default_dburl ='mysql://root@localhost:3306/django'
+
 DATABASES = {
 'default': config('DATABASE_URL', default=default_dburl, cast=dburl),
             }

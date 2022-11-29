@@ -7,6 +7,7 @@ class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = '__all__'
+        #fields = ('id','password')
 
 class NurseSerializer(serializers.ModelSerializer):
     class Meta:
@@ -24,6 +25,15 @@ class ReservationSerializer(serializers.ModelSerializer):
     class Meta:
         model = Reservation
         fields = '__all__'
+
+
+
+
+class RatingSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Rating
+        fields = ('id', 'patient' , 'nurse' , 'stars')
 
 
 # class UserSerializer(serializers.ModelSerializer):

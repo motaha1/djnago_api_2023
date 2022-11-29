@@ -6,6 +6,7 @@ admin.site.register(Nurse )
 admin.site.register(Patient)
 admin.site.register(Reservation)
 admin.site.register(testupload)
+admin.site.register([Rating])
 
 '''
 class usersAdmin(admin.ModelAdmin):
