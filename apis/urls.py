@@ -23,6 +23,10 @@ urlpatterns = [
     path('Nursedocumint/<pk>/upload' ,views.file_upload , name='upload'),
     path ('rate/<pk>/' , views.rating_pk),
     path ('rate/' , views.rating),
+    path ('test/<city>' , views.fake_recommendation_nurse),
+
+
+    
 
     
     

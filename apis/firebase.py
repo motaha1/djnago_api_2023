@@ -22,4 +22,3 @@ def firebase_sigup (email ,password):
    
         auth.create_user_with_email_and_password(email ,password)
 
-firebase_sigup("mo1@mo.com" , "fffffff")

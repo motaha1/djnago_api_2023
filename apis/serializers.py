@@ -15,6 +15,9 @@ class NurseSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
+
+
+
 class PatientSerializer(serializers.ModelSerializer):
     class Meta:
         model = Patient

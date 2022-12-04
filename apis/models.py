@@ -107,6 +107,13 @@ class Nurse(models.Model):
     city = models.CharField(max_length =100)
     birthdate = models.DateTimeField(null = True)
     doc = models.ImageField(upload_to='nurse_doc/%y/%m/%d' , null=True , blank = True)
+    #avg_rate = Rating.objects.filter(nurse=self).count()
+    @property
+    def get_avg(self):
+        return Rating.objects.filter(nurse = self).count()
+
+    
+   
 
     def __str__(self):
         return self.user.email
@@ -123,7 +130,7 @@ class Reservation(models.Model):
 
 class Rating(models.Model):
     patient = models.ForeignKey(Patient,  on_delete=models.CASCADE)
-    nurse =  models.ForeignKey (Nurse,  on_delete=models.CASCADE)
+    nurse =  models.ForeignKey (Nurse,  on_delete=models.CASCADE , related_name='rates')
     stars = models.IntegerField(default= 1 , null = True ,  validators=[MaxValueValidator(5), MinValueValidator(1)])
 
     def __str__(self):

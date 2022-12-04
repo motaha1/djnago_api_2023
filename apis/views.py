@@ -3,7 +3,8 @@ from django.shortcuts import render
 from django.http.response import JsonResponse
 
 from apis.emails import send_doc, send_otp_via_email
-#from apis.firebase import firebase_sigup
+from apis.firebase import firebase_sigup
+from apis.firestore import addpatient_firestore
 
 from .models import *
 from rest_framework.decorators import api_view
@@ -21,9 +22,9 @@ from django.core.exceptions import ObjectDoesNotExist
 
 
 
-# import pandas as pd
+import pandas as pd
 # from math import sqrt
-# import numpy as np
+import numpy as np
 # import matplotlib.pyplot as plt
 
 
@@ -64,8 +65,8 @@ def no_rest_no_model(request):
 
 #3 Function based views 
 #3.1 GET POST
-@api_view(['GET','POST'])
 
+@api_view(['GET','POST'])
 def FBV_nurse(request):
     # GET
     if request.method == 'GET':
@@ -107,13 +108,14 @@ def FBV_nurse_pk(request, pk):
         return Response(serializer.errors, status= status.HTTP_400_BAD_REQUEST)
     # DELETE
     if request.method == 'DELETE':
-        nurse.delete()
+        nurse_user = User.objects.get(id=nurse.user.id)
+        nurse_user.delete()
         return Response(status= status.HTTP_204_NO_CONTENT)
 
 ################################################user##############################33
 
 
-@api_view(['GET','POST'])
+@api_view(['GET'])
 
 def FBV_user_get(request):
     # GET
@@ -121,20 +123,20 @@ def FBV_user_get(request):
         user = User.objects.all()
         serializer = UserSerializer(user, many=True)
         return Response(serializer.data)
-    # POST
-    elif request.method == 'POST':
-        data =request.data
-        user = User.objects.create(username = data['username'] , password = data['password'] , is_Nurse = True)
-        Token.objects.create(user)
+    # # POST
+    # elif request.method == 'POST':
+    #     data =request.data
+    #     user = User.objects.create(username = data['username'] , password = data['password'] , is_Nurse = True)
+    #     Token.objects.create(user)
         
 
        
-        return Response(status= status.HTTP_201_CREATED)
+    #     return Response(status= status.HTTP_201_CREATED)
         
 
 
-@api_view(['GET','PUT','DELETE'])
-def FBV_user_put(request, pk):
+@api_view(['GET','PUT'])
+def FBV_user_pk(request, pk):
     try:
        nurse = Nurse.objects.get(pk=pk)
     except Nurse.DoesNotExists:
@@ -151,10 +153,7 @@ def FBV_user_put(request, pk):
             serializer.save()
             return Response(serializer.data)
         return Response(serializer.errors, status= status.HTTP_400_BAD_REQUEST)
-    # DELETE
-    if request.method == 'DELETE':
-        nurse.delete()
-        return Response(status= status.HTTP_204_NO_CONTENT)
+
 
 
 ##############################################################################################
@@ -173,18 +172,22 @@ def FBV_patiant(request):
     elif request.method == 'POST':
         data1= {}
         data =request.data
-       # firebase_sigup(data['email'] , data['password'])
-        user = User.objects.create( email = data['email'] , password = data['password'] ,  is_Patient = True)
-        patient = Patient.objects.create(user= user , mobile = data['mobile'], city = data['city'] , gender = data['gender'] )
-        Token.objects.create(user = user)
-        send_otp_via_email(data['email'])
-        data1['response'] = 'ok'
-        data1['token'] = Token.objects.get(user =user).key
+        try :
+            firebase_sigup(data['email'] , data['password'])
+            user = User.objects.create( email = data['email'] , password = data['password'] ,  is_Patient = True)
+            patient = Patient.objects.create(user= user , mobile = data['mobile'], city = data['city'] , gender = data['gender'] )
+            Token.objects.create(user = user)
+            send_otp_via_email(data['email'])
+            data1['response'] = 'ok'
+            data1['token'] = Token.objects.get(user =user).key
+            addpatient_firestore(data['email'] , data['name'] , data['city'])
+            return Response(data1)
+        except :
+            return Response({
+                "responce":"error"
+            })
 
-        
 
-       
-        return Response(data1)
         
 
 
@@ -208,7 +211,8 @@ def FBV_patiant_pk(request, pk):
         return Response(serializer.errors, status= status.HTTP_400_BAD_REQUEST)
     # DELETE
     if request.method == 'DELETE':
-        patient.delete()
+        user_patient = User.objects.get(id=patient.user.id)
+        user_patient.delete()
         return Response(status= status.HTTP_204_NO_CONTENT)
 
 
@@ -407,7 +411,7 @@ def rating_pk (request , pk)  :
 #     D=[]
 #     #Movie Data Frames
 #     for item in nurse:
-#         x=[item.id,item.name,item.email] 
+#         x=[item.id,item.name,item.user.email] 
 #         y+=[x]
 #     movies_df = pd.DataFrame(y,columns=['nurseId','name','email'])
 #     print("Nurse DataFrame")
@@ -517,7 +521,7 @@ def rating_pk (request , pk)  :
 
 
 #             #Applies a sum to the topUsers after grouping it up by userId
-#             tempTopUsersRating = topUsersRating.groupby('movieId').sum()[['similarityIndex','weightedRating']]
+#             tempTopUsersRating = topUsersRating.groupby('nurseId').sum()[['similarityIndex','weightedRating']]
 #             tempTopUsersRating.columns = ['sum_similarityIndex','sum_weightedRating']
 #             tempTopUsersRating.head()
 
@@ -525,13 +529,50 @@ def rating_pk (request , pk)  :
 #             recommendation_df = pd.DataFrame()
 #             #Now we take the weighted average
 #             recommendation_df['weighted average recommendation score'] = tempTopUsersRating['sum_weightedRating']/tempTopUsersRating['sum_similarityIndex']
-#             recommendation_df['movieId'] = tempTopUsersRating.index
+#             recommendation_df['nurseId'] = tempTopUsersRating.index
 #             recommendation_df.head()
 
 #             recommendation_df = recommendation_df.sort_values(by='weighted average recommendation score', ascending=False)
-#             recommender=movies_df.loc[movies_df['movieId'].isin(recommendation_df.head(5)['movieId'].tolist())]
+#             recommender=movies_df.loc[movies_df['nurseId'].isin(recommendation_df.head(5)['nurseId'].tolist())]
 #             print(recommender)
 #             return recommender.to_dict('records')
 
+from django.db.models import Avg
+from django.db.models import Count
+from django.core.serializers.json import DjangoJSONEncoder
 
-            
+@api_view(['GET'])
+def fake_recommendation_nurse(request , city) :
+
+    if request.method =='GET' :
+     
+        try :
+          
+            #n = Nurse.objects.filter(id=3)
+            #stars = Rating.objects
+            count = Nurse.objects.all().annotate(avg_rating=Avg('rates__stars'))
+            count = count.order_by('-avg_rating').values()
+            selectedcity = count.filter(city = city)
+            notinmycity = count.exclude(city = city)
+        except  :
+            return Response({'responce':'error'}
+            )
+        #user_ratings = UserRating.objects.all().values('User_Name').order_by('User_Name').annotate(rating_average=Avg('Rating'))
+
+        map={}
+        map1 = {}
+      
+        for x in selectedcity :
+
+            map[x.name]= str(str(x.avg_rating) + x.city) 
+        
+        for x in notinmycity :
+            map1[x.name]= str(str(x.avg_rating) + x.city) 
+
+        
+       
+        serializers =NurseSerializer(count , many =True)
+        map.update(map1)
+        return Response(map)
+
+###################### reset password #############################
